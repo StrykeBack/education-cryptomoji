@@ -3,7 +3,6 @@
 const { createHash } = require('crypto');
 const signing = require('./signing');
 
-
 /**
  * A simple signed Transaction class for sending funds from the signer to
  * another public key.
@@ -46,8 +45,16 @@ class Block {
    *   - hash: a unique hash string generated from the other properties
    */
   constructor(transactions, previousHash) {
-    // Your code here
-
+    this.transactions = transactions;
+    this.previousHash = previousHash;
+    this.nonce = 1337;
+    let hashStr =
+      JSON.stringify(transactions) + JSON.stringify(previousHash) + this.nonce;
+    let hashBuf = Buffer.from(hashStr);
+    this.hash = createHash('SHA512')
+      .update(hashBuf)
+      .digest()
+      .toString('hex');
   }
 
   /**
@@ -60,8 +67,16 @@ class Block {
    *   properties change.
    */
   calculateHash(nonce) {
-    // Your code here
-
+    this.nonce = nonce;
+    let hashStr =
+      JSON.stringify(this.transactions) +
+      JSON.stringify(this.previousHash) +
+      nonce;
+    let hashBuf = Buffer.from(hashStr);
+    this.hash = createHash('SHA512')
+      .update(hashBuf)
+      .digest()
+      .toString('hex');
   }
 }
 
@@ -81,7 +96,6 @@ class Blockchain {
    */
   constructor() {
     // Your code here
-
   }
 
   /**
@@ -89,7 +103,6 @@ class Blockchain {
    */
   getHeadBlock() {
     // Your code here
-
   }
 
   /**
@@ -98,7 +111,6 @@ class Blockchain {
    */
   addBlock(transactions) {
     // Your code here
-
   }
 
   /**
@@ -112,7 +124,6 @@ class Blockchain {
    */
   getBalance(publicKey) {
     // Your code here
-
   }
 }
 
