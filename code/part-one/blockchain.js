@@ -95,14 +95,14 @@ class Blockchain {
    *   - blocks: an array of blocks, starting with one genesis block
    */
   constructor() {
-    // Your code here
+    this.blocks = [new Block([], null)];
   }
 
   /**
    * Simply returns the last block added to the chain.
    */
   getHeadBlock() {
-    // Your code here
+    return this.blocks[this.blocks.length - 1];
   }
 
   /**
@@ -110,7 +110,8 @@ class Blockchain {
    * adding it to the chain.
    */
   addBlock(transactions) {
-    // Your code here
+    let newBlock = new Block(transactions, this.getHeadBlock().hash);
+    this.blocks.push(newBlock);
   }
 
   /**
@@ -123,7 +124,16 @@ class Blockchain {
    *   we make the blockchain mineable later.
    */
   getBalance(publicKey) {
-    // Your code here
+    let transactions = this.getHeadBlock().transactions;
+    return transactions.reduce((prev, curr) => {
+      if (curr.source === publicKey) {
+        return prev - curr.amount;
+      } else if (curr.recipient === publicKey) {
+        return prev + curr.amount;
+      } else {
+        return prev;
+      }
+    }, 0)
   }
 }
 
