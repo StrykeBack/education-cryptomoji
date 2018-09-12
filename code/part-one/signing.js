@@ -21,7 +21,6 @@ const createPrivateKey = () => {
 
   const buf = Buffer.from(privKey);
 
-
   return buf.toString('hex');
 };
 
@@ -39,7 +38,9 @@ const createPrivateKey = () => {
  *   not hex strings! You'll have to convert the private key.
  */
 const getPublicKey = privateKey => {
-  // Your code here
+  const buf = Buffer.from(privateKey, 'hex');
+  const pubKey = secp256k1.publicKeyCreate(buf);
+  return pubKey.toString('hex');
 };
 
 /**
