@@ -15,11 +15,28 @@
  */
 export const encode = object => {
   let sortedObj = {};
-  Object.keys(object).sort().forEach((key) => {
-    sortedObj[key] = object[key];
-  })
-  const objStr = JSON.stringify(sortedObj);
-  return Buffer.from(objStr)
+  
+  var flattenObject = function(ob) {
+    var toReturn = {};
+
+    for (var i in ob) {
+      if (!ob.hasOwnProperty(i)) continue;
+
+      if ((typeof ob[i]) == 'object') {
+        var flatObject = flattenObject(ob[i]);
+        for (var x in flatObject) {
+          if (!flatObject.hasOwnProperty(x)) continue;
+
+          toReturn[i + '.' + x] = flatObject[x];
+        }
+      } else {
+        toReturn[i] = ob[i];
+      }
+    }
+    return toReturn;
+  };
+  const flattenedObj = flattenObject(object);
+  return Buffer.from(JSON.stringify(flattenedObj, Object.keys(flattenedObj).sort()));
 };
 
 /**
