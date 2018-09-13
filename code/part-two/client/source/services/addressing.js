@@ -100,5 +100,34 @@ export const getSireAddress = (ownerKey = null) => {
  * The identifiers may be either moji dna, or moji addresses.
  */
 export const getOfferAddress = (ownerKey = null, moji = null) => {
-  // Your code here
+  let offerAddress = NAMESPACE + PREFIXES.OFFER;
+
+  if (ownerKey) {
+    offerAddress += createHash('sha512')
+      .update(ownerKey)
+      .digest('hex')
+      .toString()
+      .substring(0, 8);
+
+    if (moji) {
+      if (!Array.isArray(moji)) {
+        moji = [moji];
+      }
+
+      let mojiAddresses = moji.map(singleMoji => {
+        if (singleMoji.length === 70) {
+          return singleMoji;
+        }
+        return getMojiAddress(ownerKey, singleMoji);
+      });
+      let sortedMojis = mojiAddresses.sort().join('');
+      offerAddress += createHash('sha512')
+        .update(sortedMojis)
+        .digest('hex')
+        .toString()
+        .substring(0, 54);
+    }
+  }
+
+  return offerAddress;
 };
