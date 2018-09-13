@@ -29,10 +29,9 @@ export const getCollectionAddress = (publicKey = null) => {
     collAddress += createHash('sha512')
       .update(publicKey)
       .digest('hex')
-      .toString()
-      .substring(0, 62);
+      .toString();
   }
-  return collAddress;
+  return collAddress.substring(0, 70);
 };
 
 /**
@@ -48,7 +47,25 @@ export const getCollectionAddress = (publicKey = null) => {
  *   console.log(ownerPrefix);  // '5f4d7601ecd7ef45'
  */
 export const getMojiAddress = (ownerKey = null, dna = null) => {
-  // Your code here
+  let address = NAMESPACE + PREFIXES.MOJI;
+
+  if (ownerKey) {
+    address += createHash('sha512')
+      .update(ownerKey)
+      .digest('hex')
+      .toString()
+      .substring(0, 8);
+
+    if (dna) {
+      address += createHash('sha512')
+        .update(dna)
+        .digest('hex')
+        .toString()
+        .substring(0, 54);
+    }
+  }
+
+  return address;
 };
 
 /**
