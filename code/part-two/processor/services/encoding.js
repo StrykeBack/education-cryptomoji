@@ -16,8 +16,29 @@
  *   your object's keys or random transactions may fail.
  */
 const encode = object => {
-  // Enter your solution here
+  var flattenObject = function(ob) {
+    var toReturn = {};
 
+    for (var i in ob) {
+      if (!ob.hasOwnProperty(i)) continue;
+
+      if (typeof ob[i] == 'object') {
+        var flatObject = flattenObject(ob[i]);
+        for (var x in flatObject) {
+          if (!flatObject.hasOwnProperty(x)) continue;
+
+          toReturn[i + '.' + x] = flatObject[x];
+        }
+      } else {
+        toReturn[i] = ob[i];
+      }
+    }
+    return toReturn;
+  };
+  const flattenedObj = flattenObject(object);
+  return Buffer.from(
+    JSON.stringify(flattenedObj, Object.keys(flattenedObj).sort())
+  );
 };
 
 /**
@@ -25,8 +46,7 @@ const encode = object => {
  * the client version, there is no need to handle base64 strings.
  */
 const decode = buffer => {
-  // Your code here
-
+  return JSON.parse(buffer.toString());
 };
 
 module.exports = {
