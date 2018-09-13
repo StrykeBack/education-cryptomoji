@@ -47,17 +47,17 @@ export const getCollectionAddress = (publicKey = null) => {
  *   console.log(ownerPrefix);  // '5f4d7601ecd7ef45'
  */
 export const getMojiAddress = (ownerKey = null, dna = null) => {
-  let address = NAMESPACE + PREFIXES.MOJI;
+  let mojiAddress = NAMESPACE + PREFIXES.MOJI;
 
   if (ownerKey) {
-    address += createHash('sha512')
+    mojiAddress += createHash('sha512')
       .update(ownerKey)
       .digest('hex')
       .toString()
       .substring(0, 8);
 
     if (dna) {
-      address += createHash('sha512')
+      mojiAddress += createHash('sha512')
         .update(dna)
         .digest('hex')
         .toString()
@@ -65,7 +65,7 @@ export const getMojiAddress = (ownerKey = null, dna = null) => {
     }
   }
 
-  return address;
+  return mojiAddress;
 };
 
 /**
@@ -76,7 +76,15 @@ export const getMojiAddress = (ownerKey = null, dna = null) => {
  * otherwise returns the full address.
  */
 export const getSireAddress = (ownerKey = null) => {
-  // Your code here
+  let sireAddress = NAMESPACE + PREFIXES.SIRE_LISTING;
+
+  if (ownerKey) {
+    sireAddress += createHash('sha512')
+      .update(ownerKey)
+      .digest('hex')
+      .toString();
+  }
+  return sireAddress.substring(0, 70);
 };
 
 /**
