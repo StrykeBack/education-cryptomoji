@@ -9,7 +9,6 @@ import { createHash } from 'crypto';
 import { getPublicKey, sign } from './signing.js';
 import { encode } from './encoding.js';
 
-
 const FAMILY_NAME = 'cryptomoji';
 const FAMILY_VERSION = '0.1';
 const NAMESPACE = '5f4d76';
@@ -28,8 +27,27 @@ const NAMESPACE = '5f4d76';
  *   Also, don't forget to encode your payload!
  */
 export const createTransaction = (privateKey, payload) => {
-  // Enter your solution here
-
+  const payloadBuf = encode(payload);
+  let header = TransactionHeader.encode({
+    familyName: FAMILY_NAME,
+    familyVersion: FAMILY_VERSION,
+    inputs: [NAMESPACE],
+    outputs: [NAMESPACE],
+    signerPublicKey: getPublicKey(privateKey),
+    batcherPublicKey: getPublicKey(privateKey),
+    dependencies: [],
+    nonce: (Math.random() * 100000).toString(),
+    payloadSha512: createHash('sha512')
+      .update(payloadBuf)
+      .digest('hex')
+  }).finish();
+  let signature = sign(privateKey, header);
+  let msg = Transaction.create({
+    header,
+    headerSignature: signature,
+    payload: Buffer.from(JSON.stringify(payload))
+  });
+  return msg;
 };
 
 /**
@@ -40,8 +58,19 @@ export const createTransaction = (privateKey, payload) => {
  * transaction with no array.
  */
 export const createBatch = (privateKey, transactions) => {
-  // Your code here
-
+  if (!Array.isArray(transactions)) {
+    transactions = [transactions];
+  }
+  let batchHeader = BatchHeader.encode({
+    signerPublicKey: getPublicKey(privateKey),
+    transactionIds: transactions.map(txn => txn.headerSignature)
+  }).finish();
+  let batch = Batch.create({
+    header: batchHeader,
+    headerSignature: sign(privateKey, batchHeader),
+    transactions: transactions
+  });
+  return batch;
 };
 
 /**
@@ -54,7 +83,7 @@ export const createBatch = (privateKey, transactions) => {
  */
 export const encodeBatches = batches => {
   if (!Array.isArray(batches)) {
-    batches = [ batches ];
+    batches = [batches];
   }
   const batchList = BatchList.encode({ batches }).finish();
 
@@ -73,6 +102,12 @@ export const encodeBatches = batches => {
  * multiple payloads in an array.
  */
 export const encodeAll = (privateKey, payloads) => {
-  // Your code here
-
+  if (!Array.isArray(payloads)) {
+    payloads = [payloads];
+  }
+  let transactions = payloads.map((payload) => {
+    return createTransaction(privateKey, payload);
+  })
+  let batch = createBatch(privateKey, transactions);
+  return encodeBatches(batch);
 };

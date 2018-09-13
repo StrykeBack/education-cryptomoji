@@ -13,9 +13,7 @@
  *   deterministically! JSON is convenient, but you will need to sort
  *   your object's keys or random transactions may fail.
  */
-export const encode = object => {
-  let sortedObj = {};
-  
+export const encode = object => {  
   var flattenObject = function(ob) {
     var toReturn = {};
 
