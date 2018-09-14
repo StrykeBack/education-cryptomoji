@@ -3,7 +3,7 @@
 const { TransactionHandler } = require('sawtooth-sdk/processor/handler');
 const { InvalidTransaction } = require('sawtooth-sdk/processor/exceptions');
 const { decode } = require('./services/encoding');
-
+const { createCollection } = require('./actions/createCollection');
 
 const FAMILY_NAME = 'cryptomoji';
 const FAMILY_VERSION = '0.1';
@@ -18,9 +18,9 @@ class MojiHandler extends TransactionHandler {
    * validator, declaring which family name, versions, and namespaces it
    * expects to handle. We'll fill this one in for you.
    */
-  constructor () {
+  constructor() {
     console.log('Initializing cryptomoji handler with namespace:', NAMESPACE);
-    super(FAMILY_NAME, [ FAMILY_VERSION ], [ NAMESPACE ]);
+    super(FAMILY_NAME, [FAMILY_VERSION], [NAMESPACE]);
   }
 
   /**
@@ -46,10 +46,26 @@ class MojiHandler extends TransactionHandler {
    *   - context.deleteState(addresses): deletes the state for the passed
    *     array of state addresses. Only needed if attempting the extra credit.
    */
-  apply (txn, context) {
-    // Enter your solution here
-    // (start by decoding your payload and checking which action it has)
+  apply(txn, context) {
+    return new Promise((res, rej) => {
+      let payloadAction;
 
+      try {
+        payloadAction = decode(txn.payload).action;
+      } catch (e) {
+        rej(new InvalidTransaction('Payload encoded poorly!'));
+      }
+
+      if (payloadAction === 'CREATE_COLLECTION') {
+        createCollection(res, rej, txn, context);
+      } else if (payloadAction === 'SELECT_SIRE') {
+        res('test');
+      } else if (payloadAction === 'BREED_MOJI') {
+        res('test');
+      } else {
+        rej(new InvalidTransaction('Invalid Action!'));
+      }
+    });
   }
 }
 

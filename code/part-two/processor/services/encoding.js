@@ -16,28 +16,29 @@
  *   your object's keys or random transactions may fail.
  */
 const encode = object => {
-  var flattenObject = function(ob) {
-    var toReturn = {};
+  // var flattenObject = function(ob) {
+  //   var toReturn = {};
 
-    for (var i in ob) {
-      if (!ob.hasOwnProperty(i)) continue;
+  //   for (var i in ob) {
+  //     if (!ob.hasOwnProperty(i)) continue;
 
-      if (typeof ob[i] == 'object') {
-        var flatObject = flattenObject(ob[i]);
-        for (var x in flatObject) {
-          if (!flatObject.hasOwnProperty(x)) continue;
+  //     if (typeof ob[i] == 'object') {
+  //       var flatObject = flattenObject(ob[i]);
+  //       for (var x in flatObject) {
+  //         if (!flatObject.hasOwnProperty(x)) continue;
 
-          toReturn[i + '.' + x] = flatObject[x];
-        }
-      } else {
-        toReturn[i] = ob[i];
-      }
-    }
-    return toReturn;
-  };
-  const flattenedObj = flattenObject(object);
+  //         toReturn[i + '.' + x] = flatObject[x];
+  //       }
+  //     } else {
+  //       toReturn[i] = ob[i];
+  //     }
+  //   }
+  //   return toReturn;
+  // };
+  // const flattenedObj = flattenObject(object);
   return Buffer.from(
-    JSON.stringify(flattenedObj, Object.keys(flattenedObj).sort())
+    // JSON.stringify(flattenedObj, Object.keys(flattenedObj).sort())
+    JSON.stringify(object, Object.keys(object).sort())
   );
 };
 
@@ -46,7 +47,7 @@ const encode = object => {
  * the client version, there is no need to handle base64 strings.
  */
 const decode = buffer => {
-  return JSON.parse(buffer.toString());
+  return JSON.parse(buffer);
 };
 
 module.exports = {
